@@ -26,7 +26,6 @@ dependencies:
 
   provider: 5.0.0
   http: ^0.13.3
-
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

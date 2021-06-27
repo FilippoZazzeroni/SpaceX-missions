@@ -2,7 +2,10 @@
 class _ApiException {
   final String? message;
 
-  _ApiException({this.message});
+  /// optional string to identify the exception
+  final String? code;
+
+  _ApiException({this.message, this.code});
 
   @override
   String toString() {
@@ -11,19 +14,17 @@ class _ApiException {
   }
 }
 
-//TODO inserire codice errore
 class FetchDataException extends _ApiException {
-  FetchDataException({String? message}) : super(message: message);
+  FetchDataException({String? message, String? code})
+      : super(message: message, code: code);
 }
 
 class BadRequestException extends _ApiException {
-  BadRequestException({String? message}) : super(message: message);
+  BadRequestException({String? message, String? code})
+      : super(message: message, code: code);
 }
 
-class UnauthorisedException extends _ApiException {
-  UnauthorisedException({String? message}) : super(message: message);
-}
-
-class InvalidInputException extends _ApiException {
-  InvalidInputException({String? message}) : super(message: message);
+class ServerException extends _ApiException {
+  ServerException({String? message, String? code})
+      : super(message: message, code: code);
 }

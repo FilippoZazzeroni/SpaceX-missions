@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:spacex_missions/shared/custom_theme.dart';
 import 'package:spacex_missions/view_models/missions_view_model.dart';
 import 'package:spacex_missions/views/home_view.dart';
 
@@ -13,10 +14,8 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MissionsViewModel(),
       child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        title: 'SpaceX missions',
+        theme: CustomTheme.theme,
         home: HomeView(),
       ),
     );

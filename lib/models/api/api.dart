@@ -7,10 +7,10 @@ import 'package:spacex_missions/models/mission.dart';
 class Api {
   final _baseUrl = "https://api.spacex.land/graphql/launches";
 
-  /// [mission] is the string used to get filtered data by 'mission_name' from spaceX api
+  /// [search] is the string used to get filtered data by 'mission_name' from spaceX api
   /// [offset] is the index at which the list data fetched from the api are collected. It is used for
   /// pagination
-  Future<List<Mission>> fetchData(String mission, {int offset = 0}) async {
+  Future<List<Mission>> fetchData(String search, {int offset = 0}) async {
     final query = """
       query Launch(\$name: String, \$limit: Int, \$offset: Int) {
           launches(find: {mission_name: \$name}, offset: \$offset, limit: \$limit ) {
@@ -34,7 +34,7 @@ class Api {
           },
           body: jsonEncode({
             "query": query,
-            "variables": {"name": mission, "limit": limit, "offset": offset}
+            "variables": {"name": search, "limit": limit, "offset": offset}
           }));
 
       final rawData = _handleResponse(response);

@@ -45,6 +45,10 @@ flutter:
 
   assets:
     - assets/svgs/background.svg
+    - assets/svgs/no_connection.svg
+    - assets/svgs/no_data.svg
+    - assets/svgs/server_error.svg
+    - assets/gifs/loading.gif
 
   fonts:
     - family: Kalam

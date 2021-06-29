@@ -4,6 +4,11 @@ import 'package:spacex_missions/shared/custom_color.dart';
 class CustomTheme {
   static final theme = ThemeData(
       fontFamily: "Kalam",
-      textSelectionTheme:
-          TextSelectionThemeData(cursorColor: CustomColors.deepPurple));
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateColor.resolveWith(
+                  (states) => CustomColors.deepPurple))),
+      textSelectionTheme: TextSelectionThemeData(
+          selectionHandleColor: CustomColors.purple,
+          cursorColor: CustomColors.deepPurple));
 }

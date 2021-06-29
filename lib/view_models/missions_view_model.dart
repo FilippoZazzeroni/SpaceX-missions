@@ -12,8 +12,9 @@ import 'package:spacex_missions/models/pagination_state.dart';
 class MissionsViewModel extends ChangeNotifier {
   final _api = Api();
 
-  // initial state of the page is without items to show
-  PaginationState _state = PaginationState.noItmes;
+  static const suggestedSearch = ["Thaicom", "Echostar", "Starlink"];
+
+  PaginationState _state = PaginationState.suggestedSearchPage;
 
   // timer used to dealy calls on the api, and to not allow user to make much requests to the server
   Timer? _debounceTimer;
@@ -42,6 +43,8 @@ class MissionsViewModel extends ChangeNotifier {
 
   ErrorCardData get error => _error;
 
+  String get search => _search;
+
   //! methods
 
   void _setState(PaginationState state) {
@@ -49,16 +52,17 @@ class MissionsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// It sets the PaginationState to [PaginationState.suggestedSearchPage] because the user is going
+  /// to exit from the search feature
   void clearMissions() {
-    if (_missions.isEmpty) return;
-    _missions.clear();
-    //TODO aggiungere errore
-    _setState(PaginationState.noItmes);
+    if (_missions.isNotEmpty) _missions.clear();
+    _setState(PaginationState.suggestedSearchPage);
   }
 
   void fetchMissions(String search) async {
     // if string length is minor than 3 characters api is not called
-    if (search.length <= 3) return;
+    //!0 for test
+    if (search.length <= 0) return;
 
     _search = search;
 
@@ -84,41 +88,40 @@ class MissionsViewModel extends ChangeNotifier {
       } on FetchDataException catch (e) {
         if (e.code == "NO_INTERNET_CONNECTION")
           _error = ErrorCardData(
-              title: "Internet connection absent",
-              imgPath: "assets/svgs/no_connection.svg");
+              title: e.message,
+              imgPath: "assets/svgs/no_connection.svg",
+              hasRefreshButton: true);
         else
-          _error =
-              //TODO capire titotlo
-              ErrorCardData(title: "", imgPath: "assets/svgs/server_error.svg");
+          _error = ErrorCardData(
+              title: e.message,
+              imgPath: "assets/svgs/server_error.svg",
+              hasRefreshButton: true);
         _setState(PaginationState.firstPageError);
-      } on ServerException {
-        _error =
-            //TODO capire titotlo
-            ErrorCardData(
-                title: "Server error",
-                imgPath: "assets/svg/server_error.svg",
-                hasRefreshButton: true);
+      } on ServerException catch (e) {
+        _error = ErrorCardData(
+            title: e.message,
+            imgPath: "assets/svg/server_error.svg",
+            hasRefreshButton: true);
         _setState(PaginationState.firstPageError);
-      } on BadRequestException {
-        //TODO da capire
       }
     });
   }
 
-  //TODO gestione errori
   void requestMoreMissions() {
-    if (_isAllDataFetched || _search.length <= 3) return;
+    //! test da rimettere nel if _search.length <= 3
+    if (_isAllDataFetched) return;
 
     final preRequestMissionLength = _missions.length;
 
-    _offset = _offset + 15;
-
+    //TODO attenzione
     _setState(PaginationState.loadingMoreItems);
 
     if (_debounceTimer != null) _debounceTimer!.cancel();
 
     _debounceTimer = Timer(Duration(milliseconds: 500), () async {
       try {
+        _offset = _offset + 10;
+
         //TODO da rendere variabile offset
         _missions.addAll(await _api.fetchData(_search, offset: _offset));
 
@@ -126,9 +129,24 @@ class MissionsViewModel extends ChangeNotifier {
           _isAllDataFetched = true;
 
         _setState(PaginationState.itemsFetched);
-      } catch (e) {
-        //TODO Handle exceptions here using _state
-        print(e);
+      } on FetchDataException catch (e) {
+        if (e.code == "NO_INTERNET_CONNECTION")
+          _error = ErrorCardData(
+              title: e.message,
+              imgPath: "assets/svgs/no_connection.svg",
+              hasRefreshButton: true);
+        else
+          _error = ErrorCardData(
+              title: e.message,
+              imgPath: "assets/svgs/server_error.svg",
+              hasRefreshButton: true);
+        _setState(PaginationState.nextPageError);
+      } on ServerException catch (e) {
+        _error = ErrorCardData(
+            title: e.message,
+            imgPath: "assets/svg/server_error.svg",
+            hasRefreshButton: true);
+        _setState(PaginationState.nextPageError);
       }
     });
   }

@@ -1,14 +1,23 @@
 import 'package:flutter/cupertino.dart';
+import 'package:spacex_missions/models/search_bar_state.dart';
 
 /// view model assigned to the search bar widget. it is used to handle the states of the search bar
 class SearchBarViewModel extends ChangeNotifier {
-  // true means the text field of the search bar is hidden
-  bool _isSearchBarHidden = true;
+  String _suggestedSearch = "";
 
-  bool get isSearchBarHidden => _isSearchBarHidden;
+  SearchBarState _state = SearchBarState.hidden;
 
-  set isSearchBarHidden(bool value) {
-    _isSearchBarHidden = value;
+  String get suggestedSearch => _suggestedSearch;
+
+  SearchBarState get state => _state;
+
+  set suggestedSearch(String search) {
+    _suggestedSearch = search;
+    setState(SearchBarState.findSuggestedSearch);
+  }
+
+  void setState(SearchBarState state) {
+    _state = state;
     notifyListeners();
   }
 }

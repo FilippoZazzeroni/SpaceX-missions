@@ -10,7 +10,11 @@ import 'package:spacex_missions/shared/custom_text_style.dart';
 class ErrorCard extends StatelessWidget {
   final ErrorCardData data;
 
-  const ErrorCard({required this.data});
+  final VoidCallback? onRefreshButtonPressed;
+
+  ErrorCard({required this.data, this.onRefreshButtonPressed}) {
+    if (data.hasRefreshButton) assert(onRefreshButtonPressed != null);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +32,16 @@ class ErrorCard extends StatelessWidget {
           Text(
             data.title,
             style: CustomTextStyles.body,
-          )
+          ),
+          //TODO apply style
+          if (data.hasRefreshButton)
+            ElevatedButton.icon(
+                onPressed: onRefreshButtonPressed,
+                icon: Icon(Icons.refresh),
+                label: Text(
+                  "Refresh",
+                  style: CustomTextStyles.body,
+                ))
         ],
       ),
     );

@@ -21,8 +21,7 @@ class Api {
     """;
 
     //lenght of data to fetch
-    //TODO capire valore ottimale
-    final limit = 15;
+    final limit = 10;
 
     final url = Uri.parse(_baseUrl);
 
@@ -57,15 +56,11 @@ class Api {
     switch (response.statusCode) {
       case 200:
         return decodedResponse["data"];
-      case 400:
-        throw BadRequestException(
-            message: decodedResponse["errors"][0]["message"]);
       case 500:
-        throw ServerException(message: decodedResponse["errors"][0]["message"]);
+        throw ServerException(message: "Internal server error");
       default:
         throw FetchDataException(
-            message:
-                "Error getting data from server. response: ${response.statusCode}",
+            message: "Error getting data from server",
             code: "GENERIC_EXCEPTION");
     }
   }

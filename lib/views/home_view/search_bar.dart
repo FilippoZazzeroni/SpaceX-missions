@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:spacex_missions/models/search_bar_state.dart';
 import 'package:spacex_missions/shared/custom_shadow.dart';
 import 'package:spacex_missions/shared/custom_text_style.dart';
 import 'package:spacex_missions/view_models/missions_view_model.dart';
@@ -35,8 +36,9 @@ class _SearchBarState extends State<SearchBar> {
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(30.0)),
           boxShadow: [CustomShadow.card]),
-      child: Consumer<SearchBarViewModel>(builder: (context, model, _) {
-        if (model.isSearchBarHidden)
+      child: Consumer<SearchBarViewModel>(
+          builder: (BuildContext context, SearchBarViewModel model, _) {
+        if (model.state == SearchBarState.hidden)
           return Row(
             children: [
               Expanded(
@@ -47,7 +49,7 @@ class _SearchBarState extends State<SearchBar> {
               ),
               GestureDetector(
                 onTap: () {
-                  model.isSearchBarHidden = false;
+                  model.setState(SearchBarState.visible);
                   _node.requestFocus();
                 },
                 child: Icon(
@@ -59,10 +61,18 @@ class _SearchBarState extends State<SearchBar> {
             ],
           );
 
+        if (model.state == SearchBarState.findSuggestedSearch)
+          _controller.text = model.suggestedSearch;
+
         return TextField(
           controller: _controller,
           focusNode: _node,
-          onChanged: (value) => _missionsViewModel.fetchMissions(value),
+          onChanged: (value) {
+            // It prevents to call fetchMissions when the onChanged is called with no value change.
+            // It happens when keyboard is dismissed
+            if (value != _missionsViewModel.search)
+              _missionsViewModel.fetchMissions(value);
+          },
           decoration: InputDecoration(
               border: InputBorder.none,
               hintText: "Try Thaicom",
@@ -70,7 +80,7 @@ class _SearchBarState extends State<SearchBar> {
                 padding: const EdgeInsets.only(right: 15.0),
                 child: GestureDetector(
                   onTap: () {
-                    model.isSearchBarHidden = true;
+                    model.setState(SearchBarState.hidden);
                     _node.unfocus();
                     _missionsViewModel.clearMissions();
                   },

@@ -1,16 +1,25 @@
-# spacex_missions
+# SpaceX missions
 
-A new Flutter project.
+SpaceX missions is a mobile application that let the user search for SpaceX missions in the following API. https://api.spacex.land/graphql  
 
-## Getting Started
+# Installation instructions
 
-This project is a starting point for a Flutter application.
+Clone the repository:
 
-A few resources to get you started if this is your first Flutter project:
+```git clone  https://github.com/FilippoZazzeroni/SpaceX-missions.git```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Enter project's directory:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```cd SpaceX-missions```
+
+Get the dependencies:
+
+```flutter pub get```
+
+If you want to run the application on IOS platform, run:
+
+```cd ios && pod install```
+
+Now run the application. Be sure to have an attached device to the pc or a virtual device available, then run:
+
+```flutter run --release```

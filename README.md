@@ -16,7 +16,7 @@ Get the dependencies:
 
 ```flutter pub get```
 
-Now select the device you wish to run the application on, by coping his id that you can get it on terminal by running:
+Now select the device you wish to run the application on, by coping its id that you can get it on terminal by running:
 
 ```flutter devices```
 

@@ -16,10 +16,19 @@ Get the dependencies:
 
 ```flutter pub get```
 
-If you want to run the application on IOS platform, run:
+Now select the device you wish to run the application on, by coping his id that you can get it on terminal by running:
 
-```cd ios && pod install```
+```flutter devices```
 
-Now run the application. Be sure to have an attached device to the pc or a virtual device available, then run:
+```
+2 connected devices:
 
-```flutter run --release```
+iPhone 12 Pro Max (mobile) • 6F4BE843-7331-4A62-A759-EE4BF7E12B84 • ios            • com.apple.CoreSimulator.SimRuntime.iOS-14-4 (simulator)
+Chrome (web)               • chrome                               • web-javascript • Google Chrome 91.0.4472.114
+```
+
+The id of the device is the second value of each row.
+
+Now run the application. by running:
+
+```flutter run -d <deviceId>```

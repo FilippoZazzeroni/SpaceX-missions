@@ -29,6 +29,6 @@ Chrome (web)               • chrome                               • web-java
 
 The id of the device is the second value of each row.
 
-Now run the application. by running:
+Now run the application, by excecuting:
 
 ```flutter run -d <deviceId>```

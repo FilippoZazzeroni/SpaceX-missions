@@ -31,7 +31,6 @@ class MissionsViewModel extends ChangeNotifier {
   bool _isAllDataFetched = false;
 
   // contains error coming from the api formatted for [ErrorCard]
-  //TODO capire se fare un error card data per la pagina iniziale
   ErrorCardData _error =
       ErrorCardData(title: "No data", imgPath: "assets/svgs/no_data.svg");
 
@@ -53,20 +52,18 @@ class MissionsViewModel extends ChangeNotifier {
   }
 
   /// It sets the PaginationState to [PaginationState.suggestedSearchPage] because the user is going
-  /// to exit from the search feature
+  /// to exit from the search feature. Delete possibly current call to the api
   void clearMissions() {
+    if (_debounceTimer != null) _debounceTimer!.cancel();
     if (_missions.isNotEmpty) _missions.clear();
     _setState(PaginationState.suggestedSearchPage);
   }
 
   void fetchMissions(String search) async {
-    // if string length is minor than 3 characters api is not called
-    //!0 for test
-    if (search.length <= 0) return;
+    if (search.length <= 3) return;
 
     _search = search;
 
-    // restore to initial value
     _offset = 0;
     // restore to initial value
     _isAllDataFetched = false;
@@ -107,22 +104,21 @@ class MissionsViewModel extends ChangeNotifier {
     });
   }
 
-  void requestMoreMissions() {
-    //! test da rimettere nel if _search.length <= 3
-    if (_isAllDataFetched) return;
+  /// [isOffsetFixed] is true means that the offset of the search from the api is fixed, so
+  /// it is not updated when this function is called again.
+  void requestMoreMissions({bool isOffsetFixed = false}) {
+    if (_isAllDataFetched || _search.length <= 3) return;
 
     final preRequestMissionLength = _missions.length;
 
-    //TODO attenzione
     _setState(PaginationState.loadingMoreItems);
 
     if (_debounceTimer != null) _debounceTimer!.cancel();
 
     _debounceTimer = Timer(Duration(milliseconds: 500), () async {
       try {
-        _offset = _offset + 10;
+        if (!isOffsetFixed) _offset = _offset + 10;
 
-        //TODO da rendere variabile offset
         _missions.addAll(await _api.fetchData(_search, offset: _offset));
 
         if (preRequestMissionLength == _missions.length)

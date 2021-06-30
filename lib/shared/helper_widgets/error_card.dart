@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:spacex_missions/models/error_card_data.dart';
-import 'package:spacex_missions/models/mission.dart';
 import 'package:spacex_missions/shared/custom_shadow.dart';
 import 'package:spacex_missions/shared/custom_text_style.dart';
 
 /// Widget used to display errors coming from the api
-//TODO capire refresh button
 class ErrorCard extends StatelessWidget {
   final ErrorCardData data;
 
@@ -33,7 +31,6 @@ class ErrorCard extends StatelessWidget {
             data.title,
             style: CustomTextStyles.body,
           ),
-          //TODO apply style
           if (data.hasRefreshButton)
             ElevatedButton.icon(
                 onPressed: onRefreshButtonPressed,

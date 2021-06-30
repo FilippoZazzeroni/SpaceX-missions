@@ -7,9 +7,10 @@ import 'package:spacex_missions/models/mission.dart';
 class Api {
   final _baseUrl = "https://api.spacex.land/graphql/launches";
 
-  /// [search] is the string used to get filtered data by 'mission_name' from spaceX api
+  /// [search] is the string used to get filtered data by 'mission_name' from spaceX api.
+  ///
   /// [offset] is the index at which the list data fetched from the api are collected. It is used for
-  /// pagination
+  /// pagination.
   Future<List<Mission>> fetchData(String search, {int offset = 0}) async {
     final query = """
       query Launch(\$name: String, \$limit: Int, \$offset: Int) {

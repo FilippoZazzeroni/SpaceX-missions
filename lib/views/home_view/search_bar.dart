@@ -47,7 +47,7 @@ class _SearchBarState extends State<SearchBar> {
                   style: CustomTextStyles.title,
                 ),
               ),
-              GestureDetector(
+              InkWell(
                 onTap: () {
                   model.setState(SearchBarState.visible);
                   _node.requestFocus();
@@ -77,12 +77,13 @@ class _SearchBarState extends State<SearchBar> {
               border: InputBorder.none,
               hintText: "Try Thaicom",
               suffixIcon: Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: GestureDetector(
+                padding: const EdgeInsets.only(right: 15.0, left: 15.0),
+                child: InkWell(
                   onTap: () {
-                    model.setState(SearchBarState.hidden);
-                    _node.unfocus();
+                    _controller.clear();
+                    if (_node.hasFocus) _node.unfocus();
                     _missionsViewModel.clearMissions();
+                    model.setState(SearchBarState.hidden);
                   },
                   child: Icon(
                     Icons.clear,
@@ -98,6 +99,7 @@ class _SearchBarState extends State<SearchBar> {
   @override
   void dispose() {
     _controller.dispose();
+    _node.dispose();
     super.dispose();
   }
 }

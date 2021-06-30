@@ -28,16 +28,6 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     _missionsViewModel = context.read<MissionsViewModel>();
     _searchBarViewModel = context.read<SearchBarViewModel>();
-    _scrollController.addListener(() {
-      print("scroll listener");
-
-      //TODO capire come inserire 10 elementi nella view port, in modo cosi da chiamare request more missions solo qunado e necessario
-      // request more data only if the position in the list view is higher than the max scroll extent
-      // if (_scrollController.position.pixels >
-      //     0.9 * _scrollController.position.maxScrollExtent) {
-      //   _missionsViewModel.requestMoreMissions();
-      // }
-    });
     super.initState();
   }
 
@@ -45,34 +35,41 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(gradient: CustomColors.backgroundGradient),
-      child: SafeArea(
-        child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          backgroundColor: Colors.transparent,
-          body: Column(
-            children: [
-              SearchBar(),
-              Expanded(
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      bottom: -50,
-                      child: Container(
-                        child: SvgPicture.asset(
-                          "assets/svgs/background.svg",
-                          fit: BoxFit.fitWidth,
-                          alignment: Alignment.bottomCenter,
-                        ),
-                      ),
-                    ),
-                    //TODO handle rebuild quando cala la tastiera
-                    NotificationListener(
+      child: Stack(
+        children: [
+          Positioned.fill(
+            bottom: -50,
+            child: Container(
+              child: SvgPicture.asset(
+                "assets/svgs/background.svg",
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Scaffold(
+              resizeToAvoidBottomInset: true,
+              backgroundColor: Colors.transparent,
+              body: Column(
+                children: [
+                  SearchBar(),
+                  Flexible(
+                    child: NotificationListener(
                       onNotification: (notification) {
-                        //TODO capire come ottimizzarlo
-                        if (notification
-                            is ScrollEndNotification) if (_scrollController
-                                .position.extentAfter ==
-                            0) _missionsViewModel.requestMoreMissions();
+                        if (!_scrollController.hasClients) return false;
+
+                        if (notification is ScrollEndNotification &&
+                            _scrollController.position.extentAfter < 400) {
+                          // Prevents to call requestMoreMissions() when error occured while calling the same function
+                          // or when the state is PaginationState.loadingMoreItems
+                          if (_missionsViewModel.state !=
+                                  PaginationState.nextPageError &&
+                              _missionsViewModel.state !=
+                                  PaginationState.loadingMoreItems)
+                            _missionsViewModel.requestMoreMissions();
+                        }
+
                         return false;
                       },
                       child: Consumer<MissionsViewModel>(
@@ -83,35 +80,48 @@ class _HomeViewState extends State<HomeView> {
                             return _buildSuggestedSearches();
 
                           if (model.state == PaginationState.firstPageError)
-                            return Center(
-                                child: ErrorCard(
+                            return ErrorCard(
                               data: model.error,
                               onRefreshButtonPressed:
                                   model.error.hasRefreshButton
                                       ? () => model.fetchMissions(model.search)
                                       : null,
-                            ));
+                            );
 
                           if (model.state == PaginationState.loadingFirstPage)
                             return Center(child: LoadingIndicator());
 
                           if (model.state == PaginationState.noItmes)
-                            return Center(
-                                child: ErrorCard(
+                            return ErrorCard(
                               data: model.error,
-                            ));
+                            );
 
                           if (model.state == PaginationState.itemsFetched ||
-                              model.state == PaginationState.loadingMoreItems)
+                              model.state == PaginationState.loadingMoreItems ||
+                              model.state == PaginationState.nextPageError)
                             return ListView.builder(
                                 controller: _scrollController,
                                 //length + 1 allows to ad progress indicator at the end of the view
                                 itemCount: model.missions.length + 1,
                                 itemBuilder: (context, index) {
-                                  if (index == model.missions.length &&
-                                      model.state ==
-                                          PaginationState.loadingMoreItems) {
-                                    return LoadingIndicator();
+                                  if (index == model.missions.length) {
+                                    if (model.state ==
+                                        PaginationState.loadingMoreItems)
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 20.0),
+                                        child: LoadingIndicator(),
+                                      );
+                                    if (model.state ==
+                                        PaginationState.nextPageError)
+                                      return ErrorCard(
+                                        data: model.error,
+                                        onRefreshButtonPressed: model
+                                                .error.hasRefreshButton
+                                            ? () => model.requestMoreMissions(
+                                                isOffsetFixed: true)
+                                            : null,
+                                      );
                                   }
                                   // prevent range error when exctracing value from model.missions
                                   if (index == model.missions.length)
@@ -126,12 +136,12 @@ class _HomeViewState extends State<HomeView> {
                         },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

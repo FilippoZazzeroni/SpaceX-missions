@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-///it shows loading indicator
+/// Widget that shows loading indicator
 class LoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

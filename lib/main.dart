@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => SearchBarViewModel()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'SpaceX missions',
         theme: CustomTheme.theme,
         home: HomeView(),
